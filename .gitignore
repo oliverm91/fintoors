@@ -1,0 +1,19 @@
+# Compiled files
+/target/
+
+# Cargo.lock file
+Cargo.lock
+
+# Rust language binaries, these are specific for your local machine architecture
+**/target/
+
+# Remove any .vscode files generated for Rust
+.vscode/
+
+# Ignore any generated files
+*.rs.bk
+
+# Ignore large files, like binary dependencies
+*.rlib
+*.so
+*.rlib
