@@ -47,6 +47,7 @@ impl HolidayRule for LastWeekWeekdayRule {
     fn get_date(&self, year: i32) -> NaiveDate {
         let mut last_day = (NaiveDate::from_ymd_opt(year, self.month, 1).unwrap() + Months::new(1)).pred_opt().unwrap();
 
+        //(self.weekday - last_day.weekday())%7
         while last_day.weekday() != self.weekday {
             last_day = last_day.pred_opt().unwrap();
         }
