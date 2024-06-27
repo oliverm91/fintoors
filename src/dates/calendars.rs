@@ -21,13 +21,11 @@ impl OrdinalWeekWeekdayRule {
 }
 impl HolidayRule for OrdinalWeekWeekdayRule {
     fn get_date(&self, year: i32) -> NaiveDate {
-        let mut date = NaiveDate::from_ymd_opt(year, self.month, 1).unwrap();
+        let date = NaiveDate::from_ymd_opt(year, self.month, 1).unwrap();
 
-        // Inefficient but it does 6 iterations in worst case scenario.
-        while date.weekday() != self.weekday {
-            date = date.succ_opt().unwrap();
-        }
-        date + chrono::Duration::weeks(self.ordinal as i64 - 1)
+        let days_to_add_to_get_to_weekday = (self.weekday as i64 - date.weekday() as i64)%7;
+        let first_weekday_occurrence: NaiveDate = date + Duration::days(days_to_add_to_get_to_weekday);
+        first_weekday_occurrence + chrono::Duration::weeks(self.ordinal as i64 - 1)
     }
 }
 
@@ -45,13 +43,9 @@ impl LastWeekWeekdayRule{
 }
 impl HolidayRule for LastWeekWeekdayRule {
     fn get_date(&self, year: i32) -> NaiveDate {
-        let mut last_day = (NaiveDate::from_ymd_opt(year, self.month, 1).unwrap() + Months::new(1)).pred_opt().unwrap();
-
-        //(self.weekday - last_day.weekday())%7
-        while last_day.weekday() != self.weekday {
-            last_day = last_day.pred_opt().unwrap();
-        }
-        last_day
+        let last_day: NaiveDate = (NaiveDate::from_ymd_opt(year, self.month, 1).unwrap() + Months::new(1)).pred_opt().unwrap();
+        let days_to_substract_to_get_to_weekday: i64 = (last_day.weekday() as i64 - self.weekday as i64 )%7;
+        last_day - Duration::days(days_to_substract_to_get_to_weekday)
     }
 }
 

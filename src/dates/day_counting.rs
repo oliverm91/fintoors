@@ -1,20 +1,7 @@
 use chrono::{Datelike, NaiveDate};
 use std::cmp::min;
+use crate::dates::aux_funcs::{get_current_year_end_of_february, get_days_in_month};
 
-
-fn get_day_in_month(t: NaiveDate) -> u32 {
-    let t_year = t.year();
-    let t_month = t.month();
-    NaiveDate::from_ymd_opt(t_year, t_month + 1, 1)
-    .unwrap_or_else(|| NaiveDate::from_ymd_opt(t_year + 1, 1, 1).unwrap())
-    .pred_opt().unwrap().day()
-}
-
-fn get_current_year_end_of_february(t: NaiveDate) -> NaiveDate {
-    let year = t.year();
-    let is_leap_year = t.leap_year();
-    NaiveDate::from_ymd_opt(year, 2, if is_leap_year { 29 } else { 28 }).unwrap()
-}
 
 pub trait DayCounter {
     fn day_count(&self, start_date: NaiveDate, end_date: NaiveDate) -> i32;
@@ -119,7 +106,7 @@ impl Days30Backend for Days30UCounter {
 pub struct Days30EISDACounter;
 impl Days30Backend for Days30EISDACounter {
     fn get_d1(&self, start_date: NaiveDate, _: NaiveDate) -> i32 {
-        let s_eom: u32 = get_day_in_month(start_date);
+        let s_eom: u32 = get_days_in_month(start_date);
         
         let mut d1: u32 = start_date.day();
         if d1 == s_eom {
@@ -129,7 +116,7 @@ impl Days30Backend for Days30EISDACounter {
     }
 
     fn get_d2(&self, _: NaiveDate, end_date: NaiveDate) -> i32 {
-        let e_eom: u32 = get_day_in_month(end_date);
+        let e_eom: u32 = get_days_in_month(end_date);
 
         let mut d2: u32 = end_date.day();
         if d2 == e_eom {

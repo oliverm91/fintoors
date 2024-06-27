@@ -1,8 +1,10 @@
-use chrono::{NaiveDate, Duration, Months};
+use chrono::{Datelike, Duration, Months, NaiveDate};
 use std::collections::HashMap;
-
 use lazy_static::lazy_static;
+
 use crate::dates::date_adjusting::DateAdjustingMethod;
+use crate::dates::aux_funcs::get_eom;
+
 
 lazy_static!{
     static ref TENOR_MAP: HashMap<&'static str, (u8, char)> = {
@@ -77,15 +79,38 @@ impl Tenor {
 }
 
 impl Tenor {
-    pub fn add_to_date(&self, date: NaiveDate, dam: Option<&dyn DateAdjustingMethod>) -> NaiveDate {
-        let future_date = if let Some(func) = TENOR_UNIT_FUNC_MAP.get(&self.unit) {
+    pub fn add_to_date(&self, date: NaiveDate, adjusting_method: Option<&dyn DateAdjustingMethod>, end_of_month_roll: Option<bool>) -> NaiveDate {
+        let mut future_date: NaiveDate = if let Some(func) = TENOR_UNIT_FUNC_MAP.get(&self.unit) {
             func(self, date, self.value)
         } else {
             panic!("Unexpected value. Admitted values are 'D', 'W', 'M' and 'Y'.")
         };
-        if let Some(adjuster) = dam {
+        if let Some(mut eom_roll) = end_of_month_roll {
+            if eom_roll {
+                let date_eom: NaiveDate = get_eom(date);
+                if date==date_eom {
+                    future_date = get_eom(future_date);
+                }
+                eom_roll = !eom_roll;
+            }
+            if !eom_roll {
+                let date_day: u32 = date.day();
+                if date_day==28 {
+                    future_date = future_date.with_day(28).unwrap();
+                }
+                if date_day==31 {
+                    future_date = future_date.with_day(31)
+                    .unwrap_or(future_date.with_day(30)
+                    .unwrap_or(future_date.with_day(29)
+                    .unwrap_or(future_date.with_day(28)
+                    .unwrap())));
+                }
+            }
+        }
+        if let Some(adjuster) = adjusting_method {
             return adjuster.adjust(future_date);
-        } else {
+        }
+        else {
             return future_date;
         }
     }

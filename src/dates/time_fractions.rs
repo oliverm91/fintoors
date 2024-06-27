@@ -36,12 +36,10 @@ impl TimeFractionCalc for ActualActualISDA {
 
         let start_year_days = if start_date.leap_year() { 366 } else { 365 };
     
-        // If start and end dates are in the same year
         if start_year == end_year {
             return self.day_counter.day_count(start_date, end_date) as f64 / start_year_days as f64;
         }
     
-        // If start and end dates are in different years
         let mut year_fraction = 0.0;
     
         // Days from start date to the end of the start year
