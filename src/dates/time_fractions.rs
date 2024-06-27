@@ -1,5 +1,6 @@
 use chrono::{Datelike, NaiveDate};
 use crate::dates::day_counting::{DayCounter, ActualCounter};
+use crate::dates::aux_funcs::is_leap_year;
 
 #[allow(dead_code)]
 pub trait TimeFractionCalc {
@@ -25,9 +26,6 @@ impl TimeFractionCalc for FixedBaseTimeFractionCalc{
 
 pub struct ActualActualISDA {
     day_counter: ActualCounter
-}
-fn is_leap_year(year: i32) -> bool {
-    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
 }
 impl TimeFractionCalc for ActualActualISDA {
     fn time_fraction(&self, start_date: NaiveDate, end_date: NaiveDate) -> f64 {
