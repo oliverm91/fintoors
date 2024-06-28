@@ -47,38 +47,38 @@ fn main() {
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,2,29).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2023,2,28).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,3, 31).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,4, 30).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, None));
 
     println!("---");
@@ -90,46 +90,46 @@ fn main() {
     let tenor_date = NaiveDate::from_ymd_opt(2024,2,29).unwrap();
     let mf = ModifiedFollowing::new(&ny_calendar);
     let dadjm: Option<&dyn DateAdjustingMethod> = Some(&mf);
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2023,2,28).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,3, 31).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
     println!("---");
     println!("---");
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,4, 30).unwrap();
-    let a: Tenor = Tenor::new("12m").unwrap();
+    let a: Tenor = Tenor::from_str_opt("12m").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
-    let a: Tenor = Tenor::new("3w").unwrap();
+    let a: Tenor = Tenor::from_str_opt("3w").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
 
     let tenor_date = NaiveDate::from_ymd_opt(2024,5, 31).unwrap();
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
 
     let tenor_date = NaiveDate::from_ymd_opt(2023,3, 23).unwrap();
-    let a: Tenor = Tenor::new("1y").unwrap();
+    let a: Tenor = Tenor::from_str_opt("1y").unwrap();
     println!("{}", a.add_to_date(tenor_date, dadjm));
 }

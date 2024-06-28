@@ -54,14 +54,13 @@ lazy_static!{
     };
 }
 
-#[allow(dead_code)]
 pub struct Tenor {
     value: u8,
     unit: char
 }
 
 impl Tenor {
-    pub fn new(input: &str) -> Option<Self> {
+    pub fn from_str_opt(input: &str) -> Option<Self> {
         let tenor_map = &*TENOR_MAP;
         let input = input.trim().to_uppercase();
         
@@ -71,8 +70,17 @@ impl Tenor {
                 unit
             })
         } else {
-            // Implement manual. Unit must be 'D', 'W', 'M' or 'Y'. Value must be u8 different from 0.
-            None
+            if input.len() < 2 {
+                return None;
+            }
+            let value_part = &input[..input.len() - 1];
+            let unit_part = input.chars().last()?;
+
+            if let Ok(value) = value_part.parse::<u8>() {
+                Some(Tenor { value, unit: unit_part })
+            } else {
+                None
+            }
         }
     }
 }
