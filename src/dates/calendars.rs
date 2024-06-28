@@ -1,10 +1,19 @@
 use chrono::{Datelike, NaiveDate, Weekday, Month, Months, Duration};
+use std::ops;
 
 pub trait HolidayRule {
     fn get_date(&self, year: i32) -> NaiveDate;
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>;
+}
+
+impl Clone for Box<dyn HolidayRule> {
+    fn clone(&self) -> Self {
+        self.clone_dyn()
+    }
 }
 
 // Used for holidays like Columbus day (second monday of october => OrdinalWeekWeekdayRule::new(2, Weekday::Mon, Month::October))
+#[derive(Clone)]
 pub struct OrdinalWeekWeekdayRule {
     pub month: u32,
     pub ordinal: u8,
@@ -27,8 +36,13 @@ impl HolidayRule for OrdinalWeekWeekdayRule {
         let first_weekday_occurrence: NaiveDate = date + Duration::days(days_to_add_to_get_to_weekday);
         first_weekday_occurrence + chrono::Duration::weeks(self.ordinal as i64 - 1)
     }
+
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>{
+        Box::new(self.clone())
+    }
 }
 
+#[derive(Clone)]
 struct LastWeekWeekdayRule{
     month: u32,
     weekday: Weekday
@@ -47,9 +61,14 @@ impl HolidayRule for LastWeekWeekdayRule {
         let days_to_substract_to_get_to_weekday: i64 = (last_day.weekday() as i64 - self.weekday as i64 )%7;
         last_day - Duration::days(days_to_substract_to_get_to_weekday)
     }
+        
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>{
+        Box::new(self.clone())
+    }
 }
 
 // Used for holidays like Independance day (4th of July => MonthDayRule::new(Month::July, 4))
+#[derive(Clone)]
 pub struct MonthDayRule {
     pub month: u32,
     pub day: u8,
@@ -65,6 +84,10 @@ impl MonthDayRule {
 impl HolidayRule for MonthDayRule {
     fn get_date(&self, year: i32) -> NaiveDate {
         NaiveDate::from_ymd_opt(year, self.month, self.day as u32).unwrap()
+    }
+        
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>{
+        Box::new(self.clone())
     }
 }
 
@@ -86,18 +109,30 @@ fn easter_sunday(year: i32) -> NaiveDate {
     
     NaiveDate::from_ymd_opt(year, month as u32, day as u32).unwrap()
 }
+
+#[derive(Clone)]
 pub struct MondayEasterRule;
 impl HolidayRule for MondayEasterRule {
     fn get_date(&self, year: i32) -> NaiveDate {
         let es: NaiveDate = easter_sunday(year);
         es.succ_opt().unwrap()
     }
+        
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>{
+        Box::new(self.clone())
+    }
 }
+
+#[derive(Clone)]
 pub struct FridayEasterRule;
 impl HolidayRule for FridayEasterRule {
     fn get_date(&self, year: i32) -> NaiveDate {
         let es: NaiveDate = easter_sunday(year);
         es - Duration::days(2)
+    }
+        
+    fn clone_dyn(&self) -> Box<dyn HolidayRule>{
+        Box::new(self.clone())
     }
 }
 
@@ -194,6 +229,25 @@ impl Calendar {
             substracted_days+=1;
         }
         result_date
+    }
+}
+
+impl Calendar {
+    pub fn combine(&self, other: Calendar) -> Calendar {
+        let mut combined_holidays: Vec<NaiveDate> = self.holidays.clone();
+        combined_holidays.extend(other.holidays.clone().iter());
+
+        let mut combined_rules: Vec<Box<dyn HolidayRule>>  = self.holiday_rules.clone();
+        combined_rules.extend(other.holiday_rules);
+
+        Calendar::new(Some(combined_rules), Some(combined_holidays))
+    }
+}
+
+impl ops::Add<Calendar> for Calendar {
+    type Output = Calendar;
+    fn add(self, _rhs: Calendar) -> Self::Output {
+        self.combine(_rhs)
     }
 }
 

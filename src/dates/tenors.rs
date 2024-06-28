@@ -1,9 +1,8 @@
-use chrono::{Datelike, Duration, Months, NaiveDate};
+use chrono::{Duration, Months, NaiveDate};
 use std::collections::HashMap;
 use lazy_static::lazy_static;
 
 use crate::dates::date_adjusting::DateAdjustingMethod;
-use crate::dates::aux_funcs::get_eom;
 
 
 lazy_static!{
@@ -12,8 +11,6 @@ lazy_static!{
         
         map.insert("1D", (1, 'D'));
         map.insert("2D", (2, 'D'));
-        map.insert("1BD", (1, 'B'));
-        map.insert("2BD", (2, 'B'));
         map.insert("1W", (1, 'W'));
         map.insert("2W", (2, 'W'));
         map.insert("3W", (3, 'W'));
@@ -49,7 +46,6 @@ lazy_static!{
     };
     static ref TENOR_UNIT_FUNC_MAP: HashMap<char, fn(&Tenor, NaiveDate, u8) -> NaiveDate> = {
         let mut map = HashMap::new();
-        map.insert('B', Tenor::add_business_days as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('D', Tenor::add_days as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('W', Tenor::add_weeks as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('M', Tenor::add_months as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
@@ -82,44 +78,18 @@ impl Tenor {
 }
 
 impl Tenor {
-    pub fn add_to_date(&self, date: NaiveDate, adjusting_method: Option<&dyn DateAdjustingMethod>, end_of_month_roll: Option<bool>) -> NaiveDate {
-        let mut future_date: NaiveDate = if let Some(func) = TENOR_UNIT_FUNC_MAP.get(&self.unit) {
+    pub fn add_to_date(&self, date: NaiveDate, adjusting_method: Option<&dyn DateAdjustingMethod>) -> NaiveDate {
+        let future_date: NaiveDate = if let Some(func) = TENOR_UNIT_FUNC_MAP.get(&self.unit) {
             func(self, date, self.value)
         } else {
             panic!("Unexpected value. Admitted values are 'D', 'W', 'M' and 'Y'.")
         };
-        if let Some(mut eom_roll) = end_of_month_roll {
-            if eom_roll {
-                let date_eom: NaiveDate = get_eom(date);
-                if date==date_eom {
-                    future_date = get_eom(future_date);
-                }
-                eom_roll = !eom_roll;
-            }
-            if !eom_roll {
-                let date_day: u32 = date.day();
-                if date_day==28 {
-                    future_date = future_date.with_day(28).unwrap();
-                }
-                if date_day==31 {
-                    future_date = future_date.with_day(31)
-                    .unwrap_or(future_date.with_day(30)
-                    .unwrap_or(future_date.with_day(29)
-                    .unwrap_or(future_date.with_day(28)
-                    .unwrap())));
-                }
-            }
-        }
         if let Some(adjuster) = adjusting_method {
             return adjuster.adjust(future_date);
         }
         else {
             return future_date;
         }
-    }
-
-    fn add_business_days(&self, date: NaiveDate, amount: u8) -> NaiveDate {
-
     }
     fn add_days(&self, date: NaiveDate, amount: u8) -> NaiveDate {
         date + Duration::days(amount as i64)
