@@ -7,10 +7,6 @@ pub trait DateAdjustingMethod {
     fn adjust(&self, date: NaiveDate) -> NaiveDate;
 }
 
-fn is_non_business_day(date: NaiveDate, calendar: &Calendar) -> bool {
-    calendar.holidays.contains(&date) || date.weekday() == Weekday::Sat || date.weekday() == Weekday::Sun
-}
-
 pub struct Following<'a> {
     calendar: &'a Calendar,
 }
@@ -21,11 +17,7 @@ impl<'a> Following<'a> {
 }
 impl<'a> DateAdjustingMethod for Following<'a> {
     fn adjust(&self, date: NaiveDate) -> NaiveDate {
-        let mut adj_date: NaiveDate = date;
-        while is_non_business_day(adj_date, self.calendar) {
-            adj_date = adj_date.succ_opt().unwrap();
-        }
-        adj_date
+        self.calendar.add_business_days(date, 1)
     }
 }
 
@@ -60,11 +52,7 @@ impl<'a> Preceding<'a> {
 }
 impl<'a> DateAdjustingMethod for Preceding<'a> {
     fn adjust(&self, date: NaiveDate) -> NaiveDate {
-        let mut adjusted_date: NaiveDate = date;
-        while is_non_business_day(adjusted_date, &self.calendar) {
-            adjusted_date = adjusted_date.pred_opt().unwrap();
-        }
-        adjusted_date
+        self.calendar.substract_business_days(date, 1)
     }
 }
 

@@ -12,6 +12,8 @@ lazy_static!{
         
         map.insert("1D", (1, 'D'));
         map.insert("2D", (2, 'D'));
+        map.insert("1BD", (1, 'B'));
+        map.insert("2BD", (2, 'B'));
         map.insert("1W", (1, 'W'));
         map.insert("2W", (2, 'W'));
         map.insert("3W", (3, 'W'));
@@ -47,6 +49,7 @@ lazy_static!{
     };
     static ref TENOR_UNIT_FUNC_MAP: HashMap<char, fn(&Tenor, NaiveDate, u8) -> NaiveDate> = {
         let mut map = HashMap::new();
+        map.insert('B', Tenor::add_business_days as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('D', Tenor::add_days as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('W', Tenor::add_weeks as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
         map.insert('M', Tenor::add_months as fn(&Tenor, NaiveDate, u8) -> NaiveDate);
@@ -113,6 +116,10 @@ impl Tenor {
         else {
             return future_date;
         }
+    }
+
+    fn add_business_days(&self, date: NaiveDate, amount: u8) -> NaiveDate {
+
     }
     fn add_days(&self, date: NaiveDate, amount: u8) -> NaiveDate {
         date + Duration::days(amount as i64)

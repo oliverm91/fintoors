@@ -146,8 +146,54 @@ impl Calendar {
         self.holidays.dedup();
     }
 
-    pub fn is_holiday(self, date: NaiveDate) -> bool {
+    pub fn is_holiday_from_inner_vec(&self, date: NaiveDate) -> bool {
         self.holidays.contains(&date)
+    }
+
+    pub fn is_holiday(&self, date: NaiveDate) -> bool {
+        let y: i32 = date.year();
+        for rule in &self.holiday_rules {
+            if date==rule.get_date(y) {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn add_business_day(&self, t: NaiveDate) -> NaiveDate {
+        let mut following: NaiveDate = t + Duration::days(2*((t.weekday() == Weekday::Fri) as i64) + ((t.weekday() == Weekday::Sat) as i64) + 1);
+        while self.is_holiday(following) {
+            following = following.succ_opt().unwrap();
+        }
+        following
+    }
+
+    pub fn add_business_days(&self, t: NaiveDate, business_days: u32) -> NaiveDate {
+        let mut added_days: u32 = 0;
+        let mut result_date: NaiveDate = t;
+        while added_days < business_days {
+            result_date = self.add_business_day(result_date);
+            added_days+=1;
+        }
+        result_date
+    }
+
+    fn substract_business_day(&self, t: NaiveDate) -> NaiveDate {
+        let mut preceding: NaiveDate = t - Duration::days(2*((t.weekday() == Weekday::Mon) as i64) + ((t.weekday() == Weekday::Sun) as i64) + 1);
+        while self.is_holiday(preceding) {
+            preceding = preceding.pred_opt().unwrap();
+        }
+        preceding
+    }
+
+    pub fn substract_business_days(&self, t: NaiveDate, business_days: u32) -> NaiveDate {
+        let mut substracted_days: u32 = 0;
+        let mut result_date: NaiveDate = t;
+        while substracted_days < business_days {
+            result_date = self.substract_business_day(result_date);
+            substracted_days+=1;
+        }
+        result_date
     }
 }
 
